@@ -23,14 +23,12 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'company_id' => 'required|exists:companies,id',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'company_id' => $validated['company_id'],
+            'password' => $validated['password'],
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -79,6 +77,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'user' => $request->user(),
+            'company' => $request->user()->company()->first(),
         ]);
     }
     public function forgotPassword(Request $request)
