@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,8 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        $this->call(PermissionSeeder::class);
+
         $id = DB::table('companies')->insertGetId([
             'name' => 'Demo Company',
             'legal_name' => 'Demo Company SARL',
@@ -64,14 +67,6 @@ class DatabaseSeeder extends Seeder
             'updated_at' => now(),
         ]);
         $ids['expense_categories'] = [$id];
-
-        $id = DB::table('permissions')->insertGetId([
-            'name' => 'view_dashboard',
-            'description' => 'Sample description.',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        $ids['permissions'] = [$id];
 
         $id = DB::table('product_brands')->insertGetId([
             'company_id' => $ids['companies'][0],
@@ -147,28 +142,24 @@ class DatabaseSeeder extends Seeder
         ]);
         $ids['purchase_requests'] = [$id];
 
-        $id = DB::table('role_user')->insertGetId([
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        $ids['role_user'] = [$id];
-
         $id = DB::table('roles')->insertGetId([
             'company_id' => $ids['companies'][0],
-            'name' => 'admin',
-            'description' => 'Sample description.',
+            'name' => 'Admin',
+            'description' => 'Default administrator role.',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         $ids['roles'] = [$id];
 
-        $id = DB::table('permission_role')->insertGetId([
-            'permission_id' => $ids['permissions'][0],
-            'role_id' => $ids['roles'][0],
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        $ids['permission_role'] = [$id];
+        $permissionIds = DB::table('permissions')->pluck('id');
+        foreach ($permissionIds as $permissionId) {
+            DB::table('permission_role')->insert([
+                'permission_id' => $permissionId,
+                'role_id' => $ids['roles'][0],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         $id = DB::table('suppliers')->insertGetId([
             'company_id' => $ids['companies'][0],
@@ -214,10 +205,18 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
+            'company_id' => $ids['companies'][0],
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         $ids['users'] = [$id];
+
+        DB::table('role_user')->insert([
+            'user_id' => $ids['users'][0],
+            'role_id' => $ids['roles'][0],
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         $id = DB::table('audit_logs')->insertGetId([
             'company_id' => $ids['companies'][0],

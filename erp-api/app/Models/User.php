@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Company;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Collection;
 
 class User extends Authenticatable
 {
@@ -65,5 +66,27 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class, 'role_user')
             ->withTimestamps();
+    }
+
+    public function hasRole(string $name): bool
+    {
+        return $this->roles()
+            ->whereRaw('LOWER(name) = ?', [strtolower($name)])
+            ->exists();
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        return $this->getPermissionNames()->contains($permission);
+    }
+
+    public function getPermissionNames(): Collection
+    {
+        return $this->roles()
+            ->with('permissions:id,name')
+            ->get()
+            ->flatMap(fn (Role $role) => $role->permissions->pluck('name'))
+            ->unique()
+            ->values();
     }
 }

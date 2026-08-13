@@ -8,13 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class CompanyService
 {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(
+        private CompanyRoleSetupService $companyRoleSetupService,
+        private RoleService $roleService,
+    ) {}
+
     public function create(array $data, User $user): Company
     {
         return DB::transaction(function () use ($data, $user) {
@@ -23,6 +21,12 @@ class CompanyService
             $user->update([
                 'company_id' => $company->id,
             ]);
+
+            $roles = $this->companyRoleSetupService->setupDefaultRoles($company);
+
+            if (isset($roles['Admin'])) {
+                $this->roleService->assignRole($user, $user, $roles['Admin']);
+            }
 
             return $company;
         });

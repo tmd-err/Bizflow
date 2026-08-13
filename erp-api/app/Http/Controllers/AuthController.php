@@ -75,12 +75,9 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        $user = $request->user() ;
-        return response()->json([
-            'user' => $user ,
-            'company' => $user->company ?? [],
-            'roles' => $user->company->roles ?? [],
-        ]);
+        return response()->json(
+            $this->authService->getMePayload($request->user())
+        );
     }
     public function forgotPassword(Request $request)
     {
