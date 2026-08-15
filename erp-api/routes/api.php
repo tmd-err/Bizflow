@@ -8,6 +8,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRoleController;
 
@@ -65,4 +66,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/customers/{customer}', [CustomerController::class, 'show'])->middleware('permission:customers.view');
     Route::patch('/customers/{customer}', [CustomerController::class, 'update'])->middleware('permission:customers.update');
     Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->middleware('permission:customers.delete');
+
+    Route::get('/products', [ProductController::class, 'index'])->middleware('permission:products.view');
+    Route::post('/products', [ProductController::class, 'store'])->middleware('permission:products.create');
+    Route::get('/products/{product}', [ProductController::class, 'show'])->middleware('permission:products.view');
+    Route::patch('/products/{product}', [ProductController::class, 'update'])->middleware('permission:products.update');
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->middleware('permission:products.delete');
 });
