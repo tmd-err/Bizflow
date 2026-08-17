@@ -153,12 +153,10 @@ class DatabaseSeeder extends Seeder
 
         $permissionIds = DB::table('permissions')->pluck('id');
         foreach ($permissionIds as $permissionId) {
-            DB::table('permission_role')->insert([
-                'permission_id' => $permissionId,
-                'role_id' => $ids['roles'][0],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            DB::table('permission_role')->updateOrInsert(
+                ['permission_id' => $permissionId, 'role_id' => $ids['roles'][0]],
+                ['created_at' => now(), 'updated_at' => now()]
+            );
         }
 
         $id = DB::table('suppliers')->insertGetId([
@@ -233,11 +231,20 @@ class DatabaseSeeder extends Seeder
         $ids['audit_logs'] = [$id];
 
         $id = DB::table('customers')->insertGetId([
-            'role_id' => $ids['roles'][0],
-            'user_id' => $ids['users'][0],
+            'company_id' => $ids['companies'][0],
+            'name' => 'Sample Customer',
+            'email' => 'customer@example.com',
+            'phone' => '+212600000001',
+            'address' => '123 Main Street',
+            'city' => 'Casablanca',
+            'country' => 'Morocco',
+            'tax_number' => 'MA-CUST-001',
+            'notes' => 'Initial sample customer.',
+            'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        
         $ids['customers'] = [$id];
 
         $id = DB::table('customer_addresses')->insertGetId([

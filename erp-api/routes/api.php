@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
@@ -72,4 +73,55 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/products/{product}', [ProductController::class, 'show'])->middleware('permission:products.view');
     Route::patch('/products/{product}', [ProductController::class, 'update'])->middleware('permission:products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->middleware('permission:products.delete');
+
+    // ── Inventory ──────────────────────────────────────────────────────────
+
+    Route::get('/inventory', [InventoryController::class, 'dashboard'])
+        ->middleware('permission:inventory.view');
+
+    Route::get('/inventory/stock', [InventoryController::class, 'stockOverview'])
+        ->middleware('permission:inventory.view');
+
+    Route::get('/inventory/movements', [InventoryController::class, 'stockMovements'])
+        ->middleware('permission:inventory.movements');
+
+    Route::get('/inventory/adjustments', [InventoryController::class, 'adjustments'])
+        ->middleware('permission:inventory.adjust');
+    Route::get('/inventory/adjustments/{adjustment}', [InventoryController::class, 'showAdjustment'])
+        ->middleware('permission:inventory.adjust');
+    Route::post('/inventory/adjustments', [InventoryController::class, 'storeAdjustment'])
+        ->middleware('permission:inventory.adjust');
+
+    Route::get('/inventory/transfers', [InventoryController::class, 'transfers'])
+        ->middleware('permission:inventory.transfer');
+    Route::get('/inventory/transfers/{transfer}', [InventoryController::class, 'showTransfer'])
+        ->middleware('permission:inventory.transfer');
+    Route::post('/inventory/transfers', [InventoryController::class, 'storeTransfer'])
+        ->middleware('permission:inventory.transfer');
+    Route::patch('/inventory/transfers/{transfer}/complete', [InventoryController::class, 'completeTransfer'])
+        ->middleware('permission:inventory.transfer');
+
+    // ── Warehouses ──────────────────────────────────────────────────────────
+
+    Route::get('/warehouses', [InventoryController::class, 'warehouses'])
+        ->middleware('permission:warehouses.view');
+    Route::post('/warehouses', [InventoryController::class, 'storeWarehouse'])
+        ->middleware('permission:warehouses.create');
+    Route::get('/warehouses/{warehouse}', [InventoryController::class, 'showWarehouse'])
+        ->middleware('permission:warehouses.view');
+    Route::patch('/warehouses/{warehouse}', [InventoryController::class, 'updateWarehouse'])
+        ->middleware('permission:warehouses.update');
+    Route::delete('/warehouses/{warehouse}', [InventoryController::class, 'deactivateWarehouse'])
+        ->middleware('permission:warehouses.delete');
+
+    // ── Warehouse Locations ──────────────────────────────────────────────────
+
+    Route::get('/warehouses/{warehouse}/locations', [InventoryController::class, 'warehouseLocations'])
+        ->middleware('permission:warehouses.view');
+    Route::post('/warehouses/{warehouse}/locations', [InventoryController::class, 'storeLocation'])
+        ->middleware('permission:warehouses.create');
+    Route::patch('/locations/{location}', [InventoryController::class, 'updateLocation'])
+        ->middleware('permission:warehouses.update');
+    Route::delete('/locations/{location}', [InventoryController::class, 'deleteLocation'])
+        ->middleware('permission:warehouses.delete');
 });

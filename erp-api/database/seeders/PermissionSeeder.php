@@ -47,6 +47,16 @@ class PermissionSeeder extends Seeder
         'purchases.create',
         'purchases.update',
         'purchases.delete',
+
+        'inventory.view',
+        'inventory.movements',
+        'inventory.adjust',
+        'inventory.transfer',
+
+        'warehouses.view',
+        'warehouses.create',
+        'warehouses.update',
+        'warehouses.delete',
     ];
 
     public function run(): void
