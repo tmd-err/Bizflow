@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeft, AlertTriangle, PackageX } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/page-header";
@@ -23,12 +24,17 @@ export default function InventoryOverviewPage() {
   );
 }
 
+type Filter = "all" | "low_stock" | "out_of_stock";
+
+function readFilter(sp: ReturnType<typeof useSearchParams>): Filter {
+  const v = sp.get("status");
+  if (v === "low_stock" || v === "out_of_stock") return v;
+  return "all";
+}
+
 function OverviewContent() {
-  const filter = useMemo(() => {
-    if (typeof window === "undefined") return "all";
-    const params = new URLSearchParams(window.location.search);
-    return params.get("status") || "all";
-  }, []);
+  const searchParams = useSearchParams();
+  const filter = readFilter(searchParams);
 
   return (
     <div className="space-y-6">
@@ -57,52 +63,46 @@ function OverviewContent() {
         }
       />
 
-      <StatusTabs />
+      <StatusTabs filter={filter} />
 
       <StockList filter={filter} />
     </div>
   );
 }
 
-function StatusTabs() {
-  const tabs: { href: string; label: string; icon: React.ReactNode; active?: boolean }[] = [
-    {
-      href: "/dashboard/inventory/overview?status=all",
-      label: "All Stock",
-      active: true,
-    },
-    {
-      href: "/dashboard/inventory/overview?status=low_stock",
-      label: "Low Stock",
-      icon: <AlertTriangle className="size-4 text-amber-500" />,
-    },
-    {
-      href: "/dashboard/inventory/overview?status=out_of_stock",
-      label: "Out of Stock",
-      icon: <PackageX className="size-4 text-red-500" />,
-    },
-  ];
+const TABS: { href: string; label: string; icon?: React.ReactNode }[] = [
+  { href: "/dashboard/inventory/overview?status=all", label: "All Stock" },
+  {
+    href: "/dashboard/inventory/overview?status=low_stock",
+    label: "Low Stock",
+    icon: <AlertTriangle className="size-4 text-amber-500" />,
+  },
+  {
+    href: "/dashboard/inventory/overview?status=out_of_stock",
+    label: "Out of Stock",
+    icon: <PackageX className="size-4 text-red-500" />,
+  },
+];
 
+function StatusTabs({ filter }: { filter: Filter }) {
   return (
     <div className="flex gap-2">
-      {tabs.map((t) => (
-        <Button
-          key={t.href}
-          asChild
-          variant={t.active ? "default" : "outline"}
-          size="sm"
-        >
-          <Link href={t.href} className="inline-flex items-center gap-1.5">
-            {t.icon}
-            {t.label}
-          </Link>
-        </Button>
-      ))}
+      {TABS.map((t) => {
+        const status = (t.href.match(/status=(\w+)/)?.[1] ?? "all") as Filter;
+        return (
+          <Button key={t.href} asChild variant={filter === status ? "default" : "outline"} size="sm">
+            <Link href={t.href} className="inline-flex items-center gap-1.5">
+              {t.icon}
+              {t.label}
+            </Link>
+          </Button>
+        );
+      })}
     </div>
   );
 }
 
-function StockList({ filter }: { filter: string }) {
+function StockList({ filter }: { filter: Filter }) {
   const [rows, setRows] = useState<StockOverviewRow[]>([]);
   const [loading, setLoading] = useState(true);
 

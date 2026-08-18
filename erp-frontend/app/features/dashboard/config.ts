@@ -1,3 +1,19 @@
+import {
+  LayoutDashboard,
+  BarChart3,
+  Users,
+  ShoppingCart,
+  Package,
+  Truck,
+  Receipt,
+  CreditCard,
+  Wallet,
+  Building2,
+  Shield,
+  Settings,
+  User,
+} from "lucide-react";
+
 export const dashboardNavItems = [
   {
     title: "Overview",
@@ -38,9 +54,27 @@ export const dashboardNavItems = [
         permission: "inventory.view",
       },
       {
-        label: "Purchasing",
-        href: "/dashboard/purchasing",
-        icon: "Truck",
+        label: "Purchase Orders",
+        href: "/dashboard/purchases",
+        icon: "ShoppingCart",
+        permission: "purchases.view",
+      },
+      {
+        label: "Suppliers",
+        href: "/dashboard/purchases/suppliers",
+        icon: "Users",
+        permission: "suppliers.view",
+      },
+      {
+        label: "Delivery Receipts",
+        href: "/dashboard/purchases/delivery-receipts",
+        icon: "ClipboardList",
+        permission: "purchases.view",
+      },
+      {
+        label: "Purchase Invoices",
+        href: "/dashboard/purchases/invoices",
+        icon: "Receipt",
         permission: "purchases.view",
       },
     ],

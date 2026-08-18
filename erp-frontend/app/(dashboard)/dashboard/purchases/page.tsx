@@ -1,7 +1,7 @@
 "use client";
 
-import { LoadingSpinner } from "@/components/shared/loading-spinner";
+import { PurchaseOrdersListContent } from "@/components/purchasing/purchase-orders-list";
 
 export default function PurchasesPage() {
-  return <LoadingSpinner containerClassName="min-h-[60vh]" />;
+  return <PurchaseOrdersListContent />;
 }

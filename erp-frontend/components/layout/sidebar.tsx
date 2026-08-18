@@ -20,6 +20,7 @@ import {
   Shield,
   Settings,
   User,
+  ClipboardList,
 } from "lucide-react";
 
 import { dashboardNavItems } from "@/app/features/dashboard/config";
@@ -104,6 +105,7 @@ function CollapsibleGroup({
     Shield,
     Settings,
     User,
+    ClipboardList,
   };
 
   return (
